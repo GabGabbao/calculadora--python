@@ -2,6 +2,23 @@ import tkinter as tk
 
 historico = []
 
+def bloquear_teclas(event):
+    permitido = "0123456789+-*/.()"
+
+    # teclas permitidas especiais
+    if event.keysym in ("BackSpace", "Return", "Left", "Right", "Delete"):
+        return
+
+    # se for caractere normal
+    if len(event.char) == 1:
+        if event.char in permitido:
+            return
+        else:
+            return "break"
+
+    # qualquer outra tecla → bloqueia
+    return "break"
+
 def clicar(valor):
     entrada.insert(tk.END, valor)
 
@@ -29,15 +46,24 @@ def atualizar_historico():
     for item in historico:
         caixa_historico.insert(tk.END, item)
 
+# janela
 janela = tk.Tk()
 janela.title("Calculadora")
-janela.geometry("350x400")
+janela.geometry("350x420")
 
+# entrada
 entrada = tk.Entry(janela, font=("Arial",20))
 entrada.pack(fill="x", padx=10, pady=10)
 
+# binds
 entrada.bind("<Return>", lambda event: calcular())
+entrada.bind("<KeyPress>", bloquear_teclas)
 
+# bloqueia colar
+entrada.bind("<Control-v>", lambda e: "break")
+entrada.bind("<Control-V>", lambda e: "break")
+
+# botões
 frame_botoes = tk.Frame(janela)
 frame_botoes.pack()
 
@@ -73,6 +99,7 @@ for linha in botoes:
             command=comando
         ).pack(side="left", padx=2, pady=2)
 
+# histórico
 caixa_historico = tk.Listbox(janela, height=8)
 caixa_historico.pack(fill="both", padx=10, pady=10)
 
